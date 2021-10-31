@@ -5,23 +5,36 @@ from maploader import MapLoader
 
 
 if __name__ == "__main__":
-    initial_Map = MapLoader()
-
-    sim = Env(initial_Map)
+    sim = Env(**MapLoader().get_inits())
     agent1 = sim.add_agent(agent_class=Agent)
-    gui = Graphics(30,game=sim.state)
+    gui = Graphics(30, game=sim.state, delay=50)
 
     print("initial map")
     gui.redrawPage(sim.state)
     while not (sim.goal_test()):
         result=""
+
+        snake=sim.state.agent_list[agent1.my_id]
+        gui.drawTextLog(snake.name+" (of team "+snake.team.upper()+") individual Score is: " + str(snake.foodScore),
+                        color=agent1.my_id)
         while result != "success" and 'has died' not in result:
             action=agent1.act()
             print("attempting", action)
             result=sim.take_action(action, agent1)
             print(action, result)
         gui.redrawPage(sim.state)
+        gui.drawScores(sim.state)
+        gui.drawTextLog(snake.name+" (of team "+snake.team.upper()+") individual Score is: " + str(snake.foodScore),
+                        color=agent1.my_id)
         print("\n")
+
+    # if winner:
+    #     gui.drawTextLog("Winner, Winner, Chicken Dinner. ", (255, 215, 0), 3000)
+    #     gui.drawTextLog("Team " + str(alphabeta[arena.players[playerID].team]).upper() + " won.", (255, 215, 0), 3000)
+    # else:
+    #     gui.drawTextLog("GAME OVER", (255, 255, 255), 3000)
+    #     for snake in arena.players:
+    #         gui.drawTextLog(str(snake.realScore) + " moves by " + str(snake.name), arena.players[playerID].color, 1000)
 
     print(
         "\n\nпобеда!!!",
@@ -30,30 +43,6 @@ if __name__ == "__main__":
     )
 
 #**********************************************************************************************************
-"""
-# code at: shorturl.at/uACQT
-#                     u A QT
-
-
-from Src import GUI, Simulator, AI
-from string import ascii_lowercase as alphabeta
-import pickle
-
-
-def askForAction(x, playerID, arena, gui, ai):
-    if x == "IDS":
-        return AI.AI_IDS().run(playerID, arena)
-    if x == "RBFS":
-        return AI.AI_RBFS_S().run(playerID, arena)
-    if x == "MINMAX":
-        return AI.AI_Alpha_Beta().run(playerID, arena, 20)
-    if x == "Q-LEARNING":
-        return ai.run(playerID, arena)
-    if x == "ASTAR":
-        return AI.AI_AStar().run(playerID, arena)
-
-    return gui.getAction()
-
 
 def getInit(a):
     ai = 0
@@ -153,47 +142,3 @@ def getInit(a):
         # dill.dump(pattern, file=open("Patterns/" + str(6) + ".pickle", "wb"))
 
     return arena, gui, ai
-
-
-# ..................................................................
-
-
-def main():
-    arena, gui, ai = getInit(str(input("Load level, Load Pattern, New Game (L/P/N)? ")).upper())
-
-    winner = False
-    while not (winner or len(arena.players) == 0):
-        playerID = 0
-        for snake in arena.players:
-            gui.drawText(str(snake.name) + " (of team " + str(alphabeta[snake.team]).upper()
-                         + ")", snake.color, 1000)
-            action = int(askForAction(snake.type, playerID, arena, gui, ai))
-            winner = arena.nextTurn(playerID, action)
-            gui.redrawPage(arena)
-            gui.drawScores(arena)
-            if winner == 'd':
-                winner = False
-            elif winner:
-                break
-            else:
-                gui.drawText(str(snake.name) + " (of team " + str(
-                    alphabeta[snake.team]).upper() + ") individual Score is: "
-                             + str(snake.foodScore), snake.color, 1000)
-            playerID += 1
-
-    if winner:
-        gui.drawText("Winner, Winner, Chicken Dinner. ", (255, 215, 0), 3000)
-        gui.drawText("Team " + str(alphabeta[arena.players[playerID].team]).upper()
-                     + " won.", (255, 215, 0), 3000)
-    else:
-        gui.drawText("GAME OVER", (255, 255, 255), 3000)
-        for snake in arena.players:
-            gui.drawText(str(snake.realScore) + " moves by " + str(snake.name),
-                         arena.players[playerID].color, 1000)
-
-
-# ..................................................................
-
-main()
-
-"""

@@ -1,4 +1,17 @@
-from env import Env
+import random
+from copy import deepcopy
+
+# code at: shorturl.at/uACQT
+#                     u A QT
+"DFS"
+"BFS"
+"IDFS"
+# ******
+"RBFS"
+"MINMAX"
+"Q-LEARNING"
+"ASTAR"
+
 
 class Agent:
     def __init__(self, perceive_func=None, agent_id=None):
@@ -7,19 +20,44 @@ class Agent:
 
         ######### EDITABLE SECTION #########
 
+        self.predicted_actions = []
+
         ######### END OF EDITABLE SECTION #########
 
     def act(self):
         sensor_data = self.perceive_func(self)
 
         ######### EDITABLE SECTION #########
-        # root_env = Env()
-        import random
-        action = random.choice(["right", "left", "up", "down", "suck"])
 
+        if self.predicted_actions==[]: self.predicted_actions=self.idfs(sensor_data['Current_Env'])
+        action=self.predicted_actions.pop()
         ######### END OF EDITABLE SECTION #########
 
         return action
+
+    def idfs(self, root_env):
+        depth = 1
+        while True:
+            result = self.dls(root_env, depth)
+            if result[0]: return result[1]
+            snake=root_env.state.agent_list[self.my_id]
+            depth += snake.shekam + len(snake.body)
+
+    def dls(self, game, limit):  # returns [success, action]
+        if game.goal_test(): return [True, "found the goal"]
+        elif limit == 0: return [False, "reached limit"]
+
+        actions_list = ["right", "left", "up", "down"]
+        random.shuffle(actions_list)
+        for action in actions_list:
+            child_game = deepcopy(game)
+            result = child_game.take_action(action, self.my_id)
+            actions_taken=deepcopy(result[1]) if type(result[1]) is list else []
+            actions_taken.append(action)
+            if 'has died' not in result:
+                if self.dls(child_game, limit - 1)[0]: return [True, actions_taken]
+
+        return [False, "no good action found"]
 
 #***************************************************************************************
 '''
@@ -102,6 +140,12 @@ class AI_Q_LEARNING:
     winScore = 500
     Q = 0
 
+    def stateTag(self, ID):
+        width, height = len(self.foodGrid), len(self.foodGrid[0])
+        head = self.players[ID].headPos()
+        energy = len(self.players[ID].body) + self.players[ID].shekam
+        return ((head[0] * width * height) + (head[1] * width) + energy) * 4 + self.players[ID].currentDir
+        
     def run(self, ID, gme):
         state = gme.stateTag(ID)
         return np.argmax(self.Q[state])
