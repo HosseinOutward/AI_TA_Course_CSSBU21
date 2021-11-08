@@ -4,7 +4,6 @@ with open(os.devnull, 'w') as f:
     sys.stdout = f
     import pygame
     sys.stdout = oldstdout
-from string import ascii_lowercase as alphabeta
 import random
 
 
@@ -41,7 +40,7 @@ class Graphics:
         foodGrid=list(zip(*game.foodGrid))
         for i in range(len(foodGrid)):
             for j in range(len(foodGrid[i])):
-                color = foodGrid[i][j] * 255 // 9
+                color = foodGrid[i][j]/max([max(fg) for fg in foodGrid])*255 // 1
                 self.colorCube(i, j, (255 - color, 255, 255 - color))
 
     def drawSnake(self, game):

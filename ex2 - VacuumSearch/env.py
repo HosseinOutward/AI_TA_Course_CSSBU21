@@ -107,8 +107,8 @@ class State:
             _copy.agent_list = []
             for snake in self.agent_list: _copy.agent_list.append(deepcopy(snake, memo))
 
-            _copy.foodGrid = deepcopy(self.foodGrid, memo)
-            _copy.chance_map = deepcopy(self.chance_map, memo)
+            _copy.foodGrid = [list(tile) for tile in self.foodGrid]
+            _copy.chance_map = [list(tile) for tile in self.chance_map]
             _copy.foodAddScore = self.foodAddScore
             _copy.winScore = self.winScore
             _copy.turningCost = self.turningCost
@@ -159,9 +159,9 @@ class Snake:
         id_self = id(self)  # memoization avoids unnecesary recursion
         _copy = memo.get(id_self)
         if _copy is None:
-            _copy = type(self)(None, deepcopy(self.body[-1], memo), name=self.name, team=self.team)
+            _copy = type(self)(None, list(self.body[-1]), name=self.name, team=self.team)
 
-            _copy.body = deepcopy(self.body, memo)
+            _copy.body = [list(part) for part in self.body]
             _copy.name = self.name
             _copy.team = self.team
             _copy.shekam = self.shekam
