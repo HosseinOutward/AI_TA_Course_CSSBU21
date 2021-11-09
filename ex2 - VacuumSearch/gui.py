@@ -97,6 +97,8 @@ class Graphics:
         while True:
             events = pygame.event.get()
             for event in events:
+                if event.type == pygame.QUIT:
+                    pygame.quit()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_LEFT:
                         return "LEFT"

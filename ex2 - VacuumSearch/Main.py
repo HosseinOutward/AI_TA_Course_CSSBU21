@@ -18,8 +18,8 @@ if __name__ == "__main__":
         gui.drawTextLog(snake.name+" (of team "+snake.team.upper()+") individual Score is: " + str(snake.foodScore),
                         color=agent1.my_id)
         while result != "success" and 'has died' not in result:
-            # action = agent1.act()
-            action = gui.getAction()
+            action = agent1.act()
+            # action = gui.getAction()
             print("attempting", action)
             result=sim.take_action(action, agent1)
             print(action, result)
