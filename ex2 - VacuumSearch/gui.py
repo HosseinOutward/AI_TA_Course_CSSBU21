@@ -75,7 +75,7 @@ class Graphics:
             text = "team " + team_name + ": " + str(game.get_team_score(i))
             text_surface = font.render(text, True, color)
 
-            x = len(game.foodGrid) * (self.cubeSize + 1) + self.cubeSize // 3
+            x = len(game.foodGrid[0]) * (self.cubeSize + 1) + self.cubeSize // 3
             y = i * self.cubeSize + i * self.cubeSize // 3
             self.page.blit(text_surface, (x, y))
 

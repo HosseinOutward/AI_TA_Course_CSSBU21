@@ -18,7 +18,8 @@ if __name__ == "__main__":
         gui.drawTextLog(snake.name+" (of team "+snake.team.upper()+") individual Score is: " + str(snake.foodScore),
                         color=agent1.my_id)
         while result != "success" and 'has died' not in result:
-            action=agent1.act()
+            # action = agent1.act()
+            action = gui.getAction()
             print("attempting", action)
             result=sim.take_action(action, agent1)
             print(action, result)
@@ -28,16 +29,8 @@ if __name__ == "__main__":
                         color=agent1.my_id)
         print("\n")
 
-    # if winner:
-    #     gui.drawTextLog("Winner, Winner, Chicken Dinner. ", (255, 215, 0), 3000)
-    #     gui.drawTextLog("Team " + str(alphabeta[arena.players[playerID].team]).upper() + " won.", (255, 215, 0), 3000)
-    # else:
-    #     gui.drawTextLog("GAME OVER", (255, 255, 255), 3000)
-    #     for snake in arena.players:
-    #         gui.drawTextLog(str(snake.realScore) + " moves by " + str(snake.name), arena.players[playerID].color, 1000)
-
     print(
         "\n\nпобеда!!!",
         "\nyour cost (number of valid actions):", sim.perceive(agent1)["cost"],
-        "\nyour score (number of cleared tiles):", sim.perceive(agent1)["score"]
+        "\nyour score (Food score - turn costs):", sim.perceive(agent1)["score"]
     )
