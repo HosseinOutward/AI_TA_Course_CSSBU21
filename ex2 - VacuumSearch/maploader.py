@@ -56,6 +56,7 @@ class MapLoader:
                   foodAddScore=10, foodScoreMulti=1, turningCost=5,
                   consume_tile=False, winScore=50):
         difficulty=max(winScore/foodScoreMulti//difficulty,1)
+
         return {'foodGrid': self.get_map(h,w, difficulty, seed=seed),
                 'chance_map': self.get_chance_map(h,w,min_chance_stoc),
                 "consume_tile": consume_tile, "turningCost": turningCost,

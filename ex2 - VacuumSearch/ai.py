@@ -4,14 +4,17 @@
 import random
 from copy import deepcopy
 
+# ******
 "DFS"
 "BFS"
 "IDFS"
 # ******
+
 "RBFS"
+"ASTAR"
+#
 "MINMAX"
 "Q-LEARNING"
-"ASTAR"
 
 
 class Agent:
