@@ -37,6 +37,7 @@ class Agent:
 
         return action
 
+    ######### VV EDITABLE SECTION VV #########
     def idfs(self, root_env):
         depth = 1
         while True:
