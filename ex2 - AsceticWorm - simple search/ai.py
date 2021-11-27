@@ -56,5 +56,9 @@ class Agent:
             snake=root_env.state.agent_list[self.my_id]
             depth += snake.shekam + len(snake.body)
 
+    def bfs(self, game):
+        pass
 
+    def dfs(self, game):
+        pass
 
