@@ -37,23 +37,19 @@ class Agent:
 
     def idfs(self, root_env, jump_ite=3):
         def dls(game, limit):
-            q = deque()
+            q = []
             q.append([game, []])
 
             while q:
-                # pop first element from queue
+                # pop last element from queue
                 node = q.pop()
 
                 # goal test
                 if node[0].goal_test():
                     return node[1]
 
-                # randomize list to decrease chance of infinite loop
-                # but also not too much so to prevent too much turning cost penalty
-                if random.random() > 0.8:
-                    random.shuffle(self.actions_list)
-
                 # check if in limit
+                random.shuffle(self.actions_list)
                 if len(node[1])!=limit:
                     # add children to queue
                     for action in self.actions_list:
@@ -74,7 +70,7 @@ class Agent:
                     return result
 
     def bfs(self, game):
-        q = deque()
+        q = []
         q.append([game, []])
 
         depth = 1
@@ -88,7 +84,7 @@ class Agent:
             state_visited_count -= 1
 
             # pop first element from queue
-            node = q.popleft()
+            node = q.pop(0)
 
             # goal test
             if node[0].goal_test():
@@ -112,19 +108,15 @@ class Agent:
                 print("height: ", depth, ", state in ram: ", len(q))
             depth += 1
 
-            # pop first element from queue
+            # pop last element from queue
             node = q.pop()
 
             # goal test
             if node[0].goal_test():
                 return node[1]
 
-            # randomize list to decrease chance of infinite loop
-            # but also not too much so to prevent too much turning cost penalty
-            if random.random() > 0.8:
-                random.shuffle(self.actions_list)
-
             # add children to queue
+            random.shuffle(self.actions_list)
             for action in self.actions_list:
                 child_game = node[0].create_copy()
                 if 'd' not in child_game.take_action(action, self.my_id):
