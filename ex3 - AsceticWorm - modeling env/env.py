@@ -12,10 +12,10 @@ class Env:
         self.state.from_json(**kwargs)
         return self
 
-    def add_agent(self, agent_class, loc=None, **kwargs):
+    def add_agent(self, agent_class, spawn_point=None, **kwargs):
         ok = False
-        if loc is not None:
-            i, j = loc
+        if spawn_point is not None:
+            i, j = spawn_point
             for other_snake in self.state.agent_list:
                 if [i, j] in other_snake.body:
                     raise "agent spawn location is being used by another agent"

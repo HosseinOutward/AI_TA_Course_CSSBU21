@@ -5,9 +5,11 @@ from maploader import MapLoader
 
 
 if __name__ == "__main__":
-    map_initial = MapLoader().get_inits(10, 15, 10, seed=0)
-    sim = Env(**map_initial)
-    agent1 = sim.add_agent(agent_class=Agent, loc=(5,5))
+    # MAP CONFIG VVV
+    sim = Env(**MapLoader().get_inits(10,15,10,seed=None))
+    agent1 = sim.add_agent(agent_class=Agent, spawn_point=None, mode='idfs', optimized=True)
+    # MAP CONFIG ^^^
+
     gui = Graphics(30, game=sim.state, delay=70)
 
     print("initial map")

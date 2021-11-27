@@ -4,43 +4,33 @@ import json
 from modeled_env import ModeledEnv, set_constants
 from time import time
 
-# ******
-"DFS"
-"BFS"
-"IDFS"
-# ******
-
-"RBFS"
-"ASTAR"
-#
-"MINMAX"
-"Q-LEARNING"
-
 
 class Agent:
-    def __init__(self, perceive_func=None, agent_id=None, mode='idfs'):
+    def __init__(self, perceive_func=None, agent_id=None, optimized=True, mode='idfs'):
         self.perceive_func = perceive_func
         self.my_id = agent_id
+
+        self.predicted_actions = []
+        self.actions_list = ['up', 'right', 'down', 'left']
+
+        self.optimized = optimized
         self.alg = eval('self.'+mode)
         print('running '+mode)
-        self.actions_list = ["r", "l", "u", "d"]
-        self.predicted_actions = []
 
     def act(self):
         sensor_data = self.perceive_func(self)
-        set_constants(json.loads(sensor_data['Current_Env'])['state'])
-        sensor_data['Current_Env'] = ModeledEnv()
-
-        # from env import Env
-        # self.actions_list = ['up', 'right', 'down', 'left']
-        # sensor_data['Current_Env'] = Env([1], [1]).from_json(**json.loads(sensor_data['Current_Env'])['state'])
+        if self.optimized:
+            set_constants(json.loads(sensor_data['Current_Env'])['state'])
+            sensor_data['Current_Env'] = ModeledEnv()
+        else:
+            from env import Env
+            sensor_data['Current_Env'] = Env([1], [1]).from_json(**json.loads(sensor_data['Current_Env'])['state'])
 
         if self.predicted_actions == []:
             t0=time()
             self.predicted_actions = self.alg(sensor_data['Current_Env'])
-            self.predicted_actions = [{'r': "right", 'u': "up", 'l': "left", 'd': "down"}[act]
-                                      for act in self.predicted_actions]
             print(time()-t0)
+
         action = self.predicted_actions.pop()
 
         return action

@@ -39,7 +39,6 @@ class ModeledState:
         return constant_dict[item]
 
 
-
 class ModeledSnake:
     def __init__(self, snake_idx, copy=False):
         self.snake_idx = snake_idx
