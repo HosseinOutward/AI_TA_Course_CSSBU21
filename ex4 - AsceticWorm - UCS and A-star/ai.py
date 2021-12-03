@@ -6,7 +6,7 @@ from time import time
 
 
 class Agent:
-    def __init__(self, perceive_func=None, agent_id=None, optimized=True, mode='bfs'):
+    def __init__(self, perceive_func=None, agent_id=None, optimized=False, mode='bfs'):
         self.perceive_func = perceive_func
         self.my_id = agent_id
 
