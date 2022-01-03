@@ -48,12 +48,15 @@ class Env:
             "agent body": agent_data.body,
             "score": agent_data.foodScore,
             "cost": agent_data.realCost,
-        }
+            }
 
     def goal_test(self):
         for agent_idx in range(len(self.state.agent_list)):
             if self.state.get_team_score(agent_idx) >= self.state.winScore: return True
         return False
+
+    def create_copy(self):
+        return deepcopy(self)
 
     def __eq__(self, obj):
         return isinstance(obj, Env) and \
@@ -112,7 +115,7 @@ class State:
         self.eat(agent_idx)
 
         # turning cost
-        if snake.currentDir != action: snake.foodScore -= self.turningCost
+        if snake.currentDir != action: snake.foodScore = max(snake.foodScore-self.turningCost, 0)
         snake.currentDir = action
 
         return "success"
@@ -143,13 +146,14 @@ class State:
 
         if random.random() > self.chance_map[snake_head[0]][snake_head[1]]: return "nothing happened (stochastic)"
 
-        if len(snake.body) == 1 and snake.shekam == 0:
-            snake.foodScore += self.foodAddScore + self.foodScoreMulti * self.foodGrid[snake_head[0]][snake_head[1]]
-            snake.shekam += self.foodGrid[snake_head[0]][snake_head[1]]
+        tile=self.foodGrid[snake_head[0]][snake_head[1]]
+        if len(snake.body) == 1 and snake.shekam == 0 and tile!=0:
+            snake.foodScore += self.foodAddScore + self.foodScoreMulti * tile
+            snake.shekam += tile
 
             if self.consume_tile:
                 self.foodGrid[snake_head[0]][snake_head[1]] = \
-                    round(self.foodGrid[snake_head[0]][snake_head[1]] * random.uniform(0.1, 0.9))
+                    round(tile * random.uniform(0.1, 0.9))
 
     def get_team_score(self, agent_idx):
         snake = self.agent_list[agent_idx]
@@ -178,8 +182,8 @@ class State:
             _copy.agent_list = []
             for snake in self.agent_list: _copy.agent_list.append(deepcopy(snake, memo))
 
-            _copy.foodGrid = self.foodGrid # **
-            _copy.chance_map = self.chance_map # **
+            _copy.foodGrid = self.foodGrid
+            _copy.chance_map = self.chance_map
             _copy.foodAddScore = self.foodAddScore
             _copy.winScore = self.winScore
             _copy.turningCost = self.turningCost
