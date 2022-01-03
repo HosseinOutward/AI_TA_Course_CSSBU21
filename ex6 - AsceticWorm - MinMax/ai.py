@@ -52,12 +52,12 @@ class Agent:
                 # goal test
                 if child_game.goal_test(): return [action] + node[1]
 
-    def ucs(self, root_game):
-        pass
-
     def heuristic(self, state):
         return 0
 
-    def a_star(self, root_game):
+    def min_max(self, root_game):
+        pass
+
+    def alpha_beta(self, root_game):
         pass
 
