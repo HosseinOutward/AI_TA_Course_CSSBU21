@@ -110,7 +110,7 @@ class Graphics:
                         return "UP"
 
     def randColor(self, n):
-        random.seed(312)
+        random.seed(311+n)
         ret = 0
         r = int(random.random() * 220) + 30
         g = int(random.random() * 150)

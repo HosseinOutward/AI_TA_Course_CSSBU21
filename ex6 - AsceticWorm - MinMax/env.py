@@ -5,6 +5,7 @@ import json
 
 class Env:
     def __init__(self, foodGrid, chance_map, **kwargs):
+        self.whose_turn=0
         if type(foodGrid) is State: self.state=foodGrid
         else: self.state = State(foodGrid, chance_map, **kwargs)
 
@@ -37,7 +38,10 @@ class Env:
         return self.state.agent_list[-1].agent_type
 
     def take_action(self, action, agent):
-        return self.state.update(action, agent)
+        result = self.state.update(action, agent)
+        if result=="success":
+            self.whose_turn = (self.whose_turn+1)%len(self.state.agent_list)
+        return result
 
     def perceive(self, agent):
         agent_data = self.state.agent_list[self.state.get_agent_index(agent)]
@@ -106,7 +110,7 @@ class State:
 
         # check if impacted
         impact=self.check_for_impact(agent_idx)
-        if impact == 'exited map' or impact == 'hit its own body':
+        if impact == 'exited map' or impact=='hit its own body' and impact=='hit other snake body':
             snake.body=[]
             return snake.name+' has died'
         elif impact is not False: snake.foodScore -= 1
@@ -137,7 +141,7 @@ class State:
         for other_snake in self.agent_list:
             for part in other_snake.body:
                 if snake is other_snake: continue
-                if snake_head == part: return "hit '%s' body" % other_snake.name
+                if snake_head == part: return "hit other snake body"
         return False
 
     def eat(self, agent_idx):
