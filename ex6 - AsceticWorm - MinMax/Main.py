@@ -6,9 +6,9 @@ from maploader import MapLoader
 
 if __name__ == "__main__":
     # MAP CONFIG VVV
-    sim = Env(**MapLoader().get_inits(8,5,10,seed=0))
-    agents_list = [sim.add_agent(agent_class=Agent, spawn_point=(4,4), optimized=False),
-              sim.add_agent(agent_class=Agent, spawn_point=(4,3), optimized=False),]
+    sim = Env(**MapLoader().get_inits(3,9,5,seed=0))
+    agents_list = [sim.add_agent(agent_class=Agent, spawn_point=(2,4), optimized=False, mode='bfs'),
+            sim.add_agent(agent_class=Agent, spawn_point=(2,2), optimized=False),]
     # MAP CONFIG ^^^
 
     gui = Graphics(30, game=sim.state, delay=70)
@@ -37,6 +37,7 @@ if __name__ == "__main__":
 
     print(
         "\n\nпобеда!!!",
+        '\nwinner is '+str(sim.get_current_state()['whose_winner']),
         "\nyour cost (number of valid actions):", sim.perceive(agent)["cost"],
         "\nyour score (Food score - turn costs):", sim.perceive(agent)["score"]
     )
