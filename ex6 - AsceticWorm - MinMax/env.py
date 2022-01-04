@@ -40,7 +40,10 @@ class Env:
     def take_action(self, action, agent):
         result = self.state.update(action, agent)
         if result=="success":
+            still_alive=[snake.body!=[] for snake in self.state.agent_list]
             self.whose_turn = (self.whose_turn+1)%len(self.state.agent_list)
+            while not still_alive[self.whose_turn]:
+                self.whose_turn = (self.whose_turn+1)%len(self.state.agent_list)
         return result
 
     def perceive(self, agent):
@@ -62,8 +65,21 @@ class Env:
     def create_copy(self):
         return deepcopy(self)
 
+    def get_current_state(self):
+        for agent_idx in range(len(self.state.agent_list)):
+            if self.state.get_team_score(agent_idx) >= self.state.winScore: break
+            agent_idx=None
+
+        return {
+            'whose_turn': self.whose_turn,
+            'whose_winner': agent_idx,
+            'whose_alive': [snake.body!=[] for snake in self.state.agent_list],
+            'what_team': [snake.team for snake in self.state.agent_list],
+        }
+
     def __eq__(self, obj):
         return isinstance(obj, Env) and \
+               self.whose_turn == obj.whose_turn and\
                obj.state == self.state
 
     def __deepcopy__(self, memo):
@@ -71,6 +87,8 @@ class Env:
         _copy = memo.get(id_self)
         if _copy is None:
             _copy = type(self)(deepcopy(self.state, memo), None)
+            _copy.whose_turn == self.whose_turn
+
         return _copy
 
 
@@ -245,10 +263,10 @@ class Snake:
                obj.currentDir == self.currentDir
 
     def __deepcopy__(self, memo):
-        id_self = id(self)  # memoization avoids unnecesary recursion
+        id_self = id(self)  # memoization avoids unnecessary recursion
         _copy = memo.get(id_self)
         if _copy is None:
-            _copy = type(self)(None, list(self.body[-1]), name=self.name, team=self.team)
+            _copy = type(self)(None, None, name=self.name, team=self.team)
 
             _copy.body = [list(part) for part in self.body]
             _copy.name = self.name
