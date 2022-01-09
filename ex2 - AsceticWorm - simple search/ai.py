@@ -1,5 +1,7 @@
 import random
 from copy import deepcopy
+from env import Env
+import json
 
 
 class Agent:
@@ -15,6 +17,7 @@ class Agent:
 
     def act(self):
         sensor_data = self.perceive_func(self)
+        sensor_data['Current_Env'] = Env([1], [1]).from_json(**json.loads(sensor_data['Current_Env'])['state'])
 
         ######### EDITABLE SECTION #########
 
