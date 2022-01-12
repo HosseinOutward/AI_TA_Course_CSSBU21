@@ -39,7 +39,7 @@ class Env:
 
     def take_action(self, action, agent):
         result = self.state.update(action, agent)
-        if result=="success":
+        if result=="success" or 'has died' in result:
             still_alive=[snake.body!=[] for snake in self.state.agent_list]
             self.whose_turn = (self.whose_turn+1)%len(self.state.agent_list)
             while not still_alive[self.whose_turn]:
@@ -128,7 +128,7 @@ class State:
 
         # check if impacted
         impact=self.check_for_impact(agent_idx)
-        if impact == 'exited map' or impact=='hit its own body' and impact=='hit other snake body':
+        if impact == 'exited map' or impact=='hit its own body' or impact=='hit other snake body':
             snake.body=[]
             return snake.name+' has died'
         elif impact is not False: snake.foodScore -= 1
@@ -174,8 +174,8 @@ class State:
             snake.shekam += tile
 
             if self.consume_tile:
-                self.foodGrid[snake_head[0]][snake_head[1]] = \
-                    round(tile * random.uniform(0.1, 0.9))
+                self.foodGrid[snake_head[0]][snake_head[1]] = 0
+                # round(tile * random.uniform(0.1, 0.9))
 
     def get_team_score(self, agent_idx):
         snake = self.agent_list[agent_idx]
