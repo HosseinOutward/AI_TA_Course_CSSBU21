@@ -1,5 +1,6 @@
 from env import Env
 from ai import Agent
+from com_ai import ComAgent
 from gui import Graphics
 from maploader import MapLoader
 
@@ -7,7 +8,7 @@ from maploader import MapLoader
 if __name__ == "__main__":
     # MAP CONFIG VVV
     sim = Env(**MapLoader().get_inits(3,9,5,seed=0))
-    agents_list = [sim.add_agent(agent_class=Agent, spawn_point=(2,4), optimized=False, mode='bfs'),
+    agents_list = [sim.add_agent(agent_class=ComAgent, spawn_point=(2,4), optimized=False, mode='minimax'),
             sim.add_agent(agent_class=Agent, spawn_point=(2,2), optimized=False),]
     # MAP CONFIG ^^^
 
