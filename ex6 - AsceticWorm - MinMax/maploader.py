@@ -53,8 +53,8 @@ class MapLoader:
         return [[random.uniform(min_tile,max_tile) for j in range(w)] for i in range(h)]
 
     def get_inits(self, h, w, difficulty, seed=int(random.random()*1000), min_chance_stoc=1,
-                  foodAddScore=9, foodScoreMulti=1, turningCost=5,
-                  consume_tile=True, winScore=38):
+                  foodAddScore=10, foodScoreMulti=1, turningCost=5,
+                  consume_tile=True, winScore=19):
         difficulty=max(winScore/foodScoreMulti//difficulty,1)
 
         return {'foodGrid': self.get_map(h,w, difficulty, seed=seed),

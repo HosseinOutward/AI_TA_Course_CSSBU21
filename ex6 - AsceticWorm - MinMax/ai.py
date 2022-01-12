@@ -39,7 +39,16 @@ class Agent:
         q = []
         q.append([root_game, []])
 
+        # depth = 1
+        # state_visited_count = 1
         while q:
+            # print progress
+            # if state_visited_count == 0:
+            #     state_visited_count = len(q)
+            #     print("height: ", depth, ", state in ram: ", len(q))
+            #     depth += 1
+            # state_visited_count -= 1
+
             # pop first element from queue
             node = q.pop(0)
 
