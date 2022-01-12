@@ -56,27 +56,8 @@ class Agent:
         return 0
 
     def minimax(self, root_game):
-        result=self.minimax_agent(root_game)
-        return result[1]
+        pass
 
-    def minimax_agent(self, game, limit=10):
-        state=game.get_current_state()
-        if not state['whose_alive'][self.my_id] or limit==0:
-            return -1,[]
-        elif game.goal_test(): return 1,[]
-
-        isMaxTurn=state['whose_turn']==self.my_id
-
-        results = []
-        if random.random()<0.2: random.shuffle(self.actions_list)
-        for move in self.actions_list:
-            child=game.create_copy()
-            child.take_action(move, state['whose_turn'])
-            current_result=self.minimax_agent(child, limit=limit-1)
-            results.append((current_result[0], current_result[1]+[move]))
-
-        return max(results, key=lambda r: r[0]) if isMaxTurn else min(results, key=lambda r: r[0])
-
-    def alpha_beta(self):
+    def alpha_beta(self, root_game):
         pass
 

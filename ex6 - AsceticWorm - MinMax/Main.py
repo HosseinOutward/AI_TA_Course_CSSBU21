@@ -1,6 +1,6 @@
 from env import Env
 from ai import Agent
-from com_ai import ComAgent
+from com_ai import Agent as ComAgent
 from gui import Graphics
 from maploader import MapLoader
 
