@@ -204,7 +204,7 @@ class State:
             _copy.agent_list = []
             for snake in self.agent_list: _copy.agent_list.append(deepcopy(snake, memo))
 
-            _copy.foodGrid = self.foodGrid
+            _copy.foodGrid = [[*a] for a in self.foodGrid]
             _copy.chance_map = self.chance_map
             _copy.foodAddScore = self.foodAddScore
             _copy.winScore = self.winScore
