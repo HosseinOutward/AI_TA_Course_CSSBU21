@@ -6,8 +6,8 @@ from maploader import MapLoader
 
 if __name__ == "__main__":
     # MAP CONFIG VVV
-    sim = Env(**MapLoader().get_inits(10,15,10,seed=0))
-    agent1 = sim.add_agent(agent_class=Agent, spawn_point=(5,5), optimized=False)
+    sim = Env(**MapLoader().get_inits(10,15,10,seed=13))
+    agent1 = sim.add_agent(agent_class=Agent, spawn_point=(5,5))
     # MAP CONFIG ^^^
 
     gui = Graphics(30, game=sim.state, delay=70)

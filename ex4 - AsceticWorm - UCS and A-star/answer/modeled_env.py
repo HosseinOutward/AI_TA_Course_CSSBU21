@@ -163,7 +163,6 @@ class ModeledSnake:
 
     def __eq__(self, obj):
         return obj.shekam == self.shekam and \
-               obj.body == self.body and \
                obj.foodScore == self.foodScore and \
-               obj.realCost == self.realCost and \
-               obj.currentDir == self.currentDir
+               obj.currentDir == self.currentDir and \
+               obj.body == self.body
