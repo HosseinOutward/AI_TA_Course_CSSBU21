@@ -36,6 +36,9 @@ def unpack_zips(folder_path, rewrite=False):
 def replace_imports(folder_path):
     for f in listdir(folder_path):
         if not isdir(join(folder_path, f)) or f=='env': continue
+        if 'ai.py' in listdir(join(folder_path, f)) and 'agent.py' not in listdir(join(folder_path, f)):
+            os.rename(join(folder_path, f, 'ai.py'), join(folder_path, f, 'agent.py'))
+
         my_file = open(join(folder_path, f,'agent.py'), "r")
         text=my_file.read()
         my_file.close()
@@ -52,9 +55,13 @@ def list_names(folder_path):
     for f in listdir(folder_path):
         if not isdir(join(folder_path, f)) or f=='env': continue
         names.append(f)
-        with open(join(folder_path, f, 'INFO'), 'r') as myfile:
-            stu_codes.append(myfile.readlines()[-1])
-    return list(zip(names, stu_codes))
+        try:
+            with open(join(folder_path, f, 'INFO'), 'r') as myfile:
+                stu_codes.append(myfile.readlines()[-1])
+        except: stu_codes.append(None)
+
+    final_names=[(n,stu) for n,stu in zip(names, stu_codes)]
+    return final_names
 
 
 def get_agent_and_info(submission_path):
@@ -83,7 +90,7 @@ class Test:
                 result = sim.take_action(agent1.act(), agent1)
         t=time.time()-t; ram=tracemalloc.get_traced_memory()[1]/1024
 
-        if 'has died' not in result: sim.perceive(agent1)["cost"]=float('inf')
+        if 'has died' in result: sim.perceive(agent1)["cost"]=float('inf')
 
         return sim.perceive(agent1)["cost"], t, ram
 
@@ -117,13 +124,13 @@ class AllTests:
             for i in range(len(self.maps_list)):
                 try:
                     r=next(iterator)
-                    if r[3] is not None:
+                    if r[3] is None:
                         results.append({'score': r[0], 'run_time': r[1], 'run_memory': r[2], 'map_id': i})
-                    else: results.append({'score': r[0], 'error': r[3], 'map_id': i})
+                    else: results.append({'error': r[3], 'map_id': i})
                 except StopIteration: break
                 except TimeoutError as error:
                     # print("function took longer than %d seconds" % error.args[1])
-                    results.append({'score': 0, 'map_id': i, 'error': 'timeout %s'%self.timeout})
+                    results.append({'error': 'timeout', 'map_id': i})
 
         sorted(results, key=lambda x: x['map_id'])
         return results
@@ -133,27 +140,35 @@ def all_test(pth, zip_names_stu, env, maps_list, time_out=None):
     all_test_obj = AllTests(maps_list, env, time_out)
 
     agent_list=[get_agent_and_info(r'%s\%s'%(pth,name)) for name, stu in zip_names_stu]
-    with ProcessPool(max_workers=len(agent_list)) as pool:
+    with ProcessPool(max_workers=1) as pool:
         future = pool.map(all_test_obj.test_one_agent, agent_list)
         iterator = future.result()
         result_list = []
         for name, stu in zip_names_stu:
             try:
                 r=next(iterator)
-                result_list.append({'name': name, 'stu_id': stu, 'final_score': sum([rr['score'] for rr in r])/len(r),
-                                    'error': True in ['error' in rr.keys() for rr in r], 'result': r})
+                di={'name': name, 'stu_id': stu,
+                    'final_score': sum([rr['score'] for rr in r if 'score' in rr.keys()])/len(r),
+                    'error': True in ['error' in rr.keys() for rr in r]}
+                for rr in r: di.update({k + '-%s'%rr['map_id']:rr[k] for k in rr.keys() if k != 'map_id'})
+                result_list.append(di)
             except StopIteration: break
+            except: result_list.append({'name': name, 'stu_id': stu, 'error': 'fatal'})
 
     print(*result_list, sep='\n')
     return result_list
 
 
-def prepeare_run(test, unpack, import_fix, backup=False, overwrite=False, time_out=None, map_diff='easy'):
+def prepeare_run(test, unpack, import_fix, backup=False, overwrite=False,
+                 force_results=False, time_out=None, map_diff='easy'):
     pth=r'ex\%s'%test
 
     if backup:
         f=join('backup', test)
+        if not os.path.exists(f): os.makedirs(f)
         shutil.make_archive(join(f,'bu%s.zip'%len(listdir(f))), 'zip', pth)
+
+    if not force_results and 'results.csv' in listdir(pth): print('skipped %s, no names'%test); return
 
     if unpack: unpack_zips(pth, rewrite=overwrite)
     if import_fix: replace_imports(pth)
@@ -164,10 +179,13 @@ def prepeare_run(test, unpack, import_fix, backup=False, overwrite=False, time_o
 
     print('testing ', len(maps_list), 'maps for ', pth)
 
-    pandas.DataFrame(all_test(pth, list_names(pth), env,
-        maps_list, time_out=time_out)).to_csv(join(pth,'results.csv'), index=False)
+    name_listing=list_names(pth)
+    pandas.DataFrame(all_test(pth, name_listing, env, maps_list, time_out=time_out)).to_csv(join(pth,'results.csv'), index=False)
 
 
 if __name__ == "__main__":
-    prepeare_run('ucs', unpack=True, import_fix=True, overwrite=False, backup=False, time_out=120)
+    for test in listdir('ex'):
+        if test in ['alpha-beta','minimax']: continue
+        prepeare_run(test, force_results=True, unpack=False,
+            import_fix=False, overwrite=False, backup=True, time_out=5*60)
 
